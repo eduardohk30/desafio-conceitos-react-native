@@ -21,7 +21,9 @@ export default function App() {
     })
     
     async function handleLikeRepository(id) {
-        await api.post(`repositories/${id}/like`);
+        const repository = await api.post(`repositories/${id}/like`);
+
+        console.log(repository);
 
         let newRepositories = repositories;
         var indexRepo = repositories.findIndex(repoIndex => (
@@ -38,36 +40,40 @@ export default function App() {
         <>
             <StatusBar barStyle="light-content" backgroundColor="#7159c1" />
             <SafeAreaView style={styles.container}>
-                {repositories.map(repository => (
-                    <View style={styles.repositoryContainer} key={repository.id}>
-                        <Text style={styles.repository}>{repository.title}</Text>
-                            {repository.techs.map(tech => (
-                                <View style={styles.techsContainer} key={tech}>    
-                                    <Text style={styles.tech}>{tech}</Text>
+                    <FlatList 
+                        data={repositories}
+                        style={styles.repositoryContainer} 
+                        keyExtractor={repository => repository.id}
+                        renderItem={({ item: repository }) => (
+                            <View style={styles.repositoryContainer}>
+                                <Text style={styles.repository}>{repository.title}</Text>
+                                {repository.techs.map(tech => (
+                                    <View style={styles.techsContainer} key={tech}>    
+                                        <Text style={styles.tech}>{tech}</Text>
+                                    </View>
+                                ))}
+                                <View style={styles.likesContainer}>
+                                    <Text
+                                    style={styles.likeText}
+                                    // Remember to replace "1" below with repository ID: {`repository-likes-1`}
+                                    testID={`repository-likes-${repository.id}`}
+                                    >
+                                    {repository.likes} curtidas
+                                    </Text>
                                 </View>
-                            ))}
-                            <View style={styles.likesContainer}>
-                                <Text
-                                style={styles.likeText}
-                                // Remember to replace "1" below with repository ID: {`repository-likes-1`}
-                                testID={`repository-likes-${repository.id}`}
+
+                                <TouchableOpacity
+                                    style={styles.button}
+                                    onPress={() => handleLikeRepository(repository.id)}
+                                    // Remember to replace "1" below with repository ID: testID={`like-button-1`}
+                                    testID={`like-button-${repository.id}`}
                                 >
-                                {repository.likes} curtidas
-                                </Text>
+                                    <Text style={styles.buttonText}>Curtir</Text>
+                                </TouchableOpacity>
                             </View>
 
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => handleLikeRepository(repository.id)}
-                                // Remember to replace "1" below with repository ID: testID={`like-button-1`}
-                                testID={`like-button-${repository.id}`}
-                            >
-                                <Text style={styles.buttonText}>Curtir</Text>
-                            </TouchableOpacity>
-                        
-                    </View>
-                        
-                ))}
+                        )}
+                    />
             </SafeAreaView>
         </>
     );
@@ -123,4 +129,3 @@ const styles = StyleSheet.create({
         padding: 15,
     },
 });
-            
